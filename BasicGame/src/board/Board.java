@@ -92,9 +92,18 @@ public class Board extends JPanel implements ActionListener {
 			index++;
 		}
 
+		String numOfLives = "Lives " + spaceship.getNumOfLives();
+		String numOfPoints = "Points " + numOfPowerUpsCollected;
+		Font small = new Font("Helvetica", Font.BOLD, 20);
+		FontMetrics fm = getFontMetrics(small);
+
+		g.setColor(Color.white);
+		g.setFont(small);
+		g.drawString(numOfLives, 5,15);
+		g.drawString(numOfPoints,5,40);
 		g.setColor(Color.WHITE);
-		g.drawString("Lives " + spaceship.getNumOfLives(), 5, 15);
-		g.drawString("Points  " + numOfPowerUpsCollected, 5, 40);
+		//g.drawString("Lives " + spaceship.getNumOfLives(), 5, 15);
+		//g.drawString("Points  " + numOfPowerUpsCollected, 5, 40);
 
 	}
 
@@ -170,36 +179,6 @@ public class Board extends JPanel implements ActionListener {
 		if (powerUpVisible) {
 			Rectangle r4 = speedBoost.getBounds();
 			if (r3.intersects(r4)) {
-				/*
-				 * Try to play the audio file
-				 */
-				/*
-				try {
-				//TODO fix audio
-					logger.info("music");
-					logger.info(url.toString());
-					logger.info("Attempting to play audio");
-					
-					logger.info(url.toString());
-					logger.info(url.getFile().toString());
-					String s = url.getFile().toString();
-					s = "/" + s;
-					logger.info(s);
-					File f = new File(s);
-					logger.info("file = " + f);
-					audioInputStream = AudioSystem.getAudioInputStream(f.getAbsoluteFile());
-					clip = AudioSystem.getClip();
-					if(!clip.isOpen()) {
-					clip.open(audioInputStream);
-					}
-					   logger.info(s);
-					   logger.info(url.toString());
-				} catch (Exception e) {
-					System.err.println(e.getMessage());
-					logger.severe(e.toString());
-				}
-				clip.start();
-				*/
 				speedBoost.setVisible(false);
 				powerUpVisible = false;
 				numOfPowerUpsCollected++;
