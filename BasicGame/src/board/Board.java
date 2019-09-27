@@ -1,4 +1,5 @@
 package board;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -18,6 +19,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -42,16 +44,13 @@ public class Board extends JPanel implements ActionListener {
 	private boolean outOfLives = false;
 	private int numOfPowerUpsCollected = 0;
 	private ArrayList<Alien> allAliens = new ArrayList<Alien>();
-	Clip clip;
-	AudioInputStream audioInputStream; 
-	URL url = this.getClass().getResource("/resources/nice.wav");
+
 	public Board() {
 		initBoard();
 	}
 
 	private void initBoard() {
-		
-		
+
 		addKeyListener(new TAdapter());
 		setFocusable(true);
 		setBackground(Color.BLACK);
@@ -68,15 +67,21 @@ public class Board extends JPanel implements ActionListener {
 		if (ingame) {
 			drawObjects(g);
 		}
-		if(outOfLives) {
+		if (outOfLives) {
 			drawGameOver(g);
 		}
 		Toolkit.getDefaultToolkit().sync();
 	}
 
 	private void drawObjects(Graphics g) {
-		if(hitAlien) {
-			g.dispose();
+		if (hitAlien) {
+			try {
+				TimeUnit.SECONDS.sleep(2);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
+			allAliens.clear();
 			hitAlien = false;
 		}
 		if (spaceship.isVisible()) {
@@ -94,16 +99,19 @@ public class Board extends JPanel implements ActionListener {
 
 		String numOfLives = "Lives " + spaceship.getNumOfLives();
 		String numOfPoints = "Points " + numOfPowerUpsCollected;
-		Font small = new Font("Helvetica", Font.BOLD, 20);
-		FontMetrics fm = getFontMetrics(small);
+		Font small = new Font("Helvetica", Font.PLAIN, 30);
 
-		g.setColor(Color.white);
+		if (spaceship.getNumOfLives() > 1) {
+			g.setColor(Color.GREEN);
+		} else if (spaceship.getNumOfLives() == 1) {
+			g.setColor(Color.YELLOW);
+		} else {
+			g.setColor(Color.RED);
+		}
 		g.setFont(small);
-		g.drawString(numOfLives, 5,15);
-		g.drawString(numOfPoints,5,40);
+		g.drawString(numOfLives, 5, 30);
 		g.setColor(Color.WHITE);
-		//g.drawString("Lives " + spaceship.getNumOfLives(), 5, 15);
-		//g.drawString("Points  " + numOfPowerUpsCollected, 5, 40);
+		g.drawString(numOfPoints, 5, 60);
 
 	}
 
@@ -111,13 +119,13 @@ public class Board extends JPanel implements ActionListener {
 
 		String msg = "Game Over";
 		String msg2 = "Final Score: " + numOfPowerUpsCollected;
-		Font small = new Font("Helvetica", Font.BOLD, 14);
+		Font small = new Font("Helvetica", Font.BOLD, 30);
 		FontMetrics fm = getFontMetrics(small);
 
 		g.setColor(Color.white);
 		g.setFont(small);
-		g.drawString(msg, (B_WIDTH - fm.stringWidth(msg)) / 2, B_HEIGHT+50 / 2);
-		g.drawString(msg2, (B_WIDTH + 50 - fm.stringWidth(msg2)) + 50 / 2, B_HEIGHT + 50 / 2);
+		g.drawString(msg, (B_WIDTH + 350 - fm.stringWidth(msg)) / 2, B_HEIGHT + 50 / 2);
+		g.drawString(msg2, (B_WIDTH + 50 - fm.stringWidth(msg2)) + 100 / 2, B_HEIGHT + 100 / 2);
 
 	}
 
@@ -168,11 +176,10 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	/*
-	 * Checks the collisions between the blue square and the aliens and the red square
-	 * by checking if any of the points intersect
+	 * Checks the collisions between the blue square and the aliens and the red
+	 * square by checking if any of the points intersect
 	 */
 	public void checkCollisions() {
-		  
 
 		Rectangle r3 = spaceship.getBounds();
 		int sizeOfAliens = 0;
@@ -189,10 +196,10 @@ public class Board extends JPanel implements ActionListener {
 			Rectangle r2 = a.getBounds();
 			if (r3.intersects(r2)) {
 				System.out.println("touched an alien");
-				
-				int numOfLives =  spaceship.getNumOfLives();
+				// here
+				int numOfLives = spaceship.getNumOfLives();
 				numOfLives--;
-				if(numOfLives < 0) {
+				if (numOfLives < 0) {
 					outOfLives = true;
 					ingame = false;
 					System.out.println("out of lives");
@@ -220,7 +227,6 @@ public class Board extends JPanel implements ActionListener {
 			}
 		}
 	}
-
 
 	private class TAdapter extends KeyAdapter {
 

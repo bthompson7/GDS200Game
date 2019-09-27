@@ -9,7 +9,7 @@ public class Ship extends Sprite {
 
     private int dx;
     private int dy;
-    private int numOfLives = 3;
+    private int numOfLives = 2;
 
     public Ship(int x, int y) {
     	super(x, y);
