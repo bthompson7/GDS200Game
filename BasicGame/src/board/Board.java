@@ -25,6 +25,9 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import sprites.*;
+import ui.HowToPlayWindow;
+
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -44,6 +47,7 @@ public class Board extends JPanel implements ActionListener {
 	private boolean outOfLives = false;
 	private int numOfPowerUpsCollected = 0;
 	private ArrayList<Alien> allAliens = new ArrayList<Alien>();
+	JButton b = new JButton("Play Again");
 
 	public Board() {
 		initBoard();
@@ -59,6 +63,26 @@ public class Board extends JPanel implements ActionListener {
 		spaceship = new Ship(ICRAFT_X, ICRAFT_Y);
 		timer = new Timer(DELAY, this);
 		timer.start();
+		add(b);
+		
+		b.setVisible(false);
+	}
+
+	
+	private void reinitBoard(Graphics g) {
+		remove(b);
+		add(b);
+		b.setVisible(false);
+		System.out.println("Pressed play again button");
+		ingame = true;
+		spaceship = new Ship(ICRAFT_X, ICRAFT_Y);
+		addKeyListener(new TAdapter());
+		setFocusable(true);
+		numOfPowerUpsCollected = 0;
+		outOfLives = false;
+		g.dispose();
+		setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT));
+		timer.start();
 	}
 
 	@Override
@@ -69,6 +93,7 @@ public class Board extends JPanel implements ActionListener {
 		}
 		if (outOfLives) {
 			drawGameOver(g);
+
 		}
 		Toolkit.getDefaultToolkit().sync();
 	}
@@ -126,7 +151,10 @@ public class Board extends JPanel implements ActionListener {
 		g.setFont(small);
 		g.drawString(msg, (B_WIDTH + 350 - fm.stringWidth(msg)) / 2, B_HEIGHT + 50 / 2);
 		g.drawString(msg2, (B_WIDTH + 50 - fm.stringWidth(msg2)) + 100 / 2, B_HEIGHT + 100 / 2);
-
+		b.setVisible(true);
+		b.addActionListener((e) -> {
+			reinitBoard(g);
+		});
 	}
 
 	@Override
