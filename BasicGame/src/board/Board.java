@@ -182,7 +182,7 @@ public class Board extends JPanel implements ActionListener {
 			int xLoc = rand.nextInt(800);
 			Alien alien = new Alien(xLoc, 0);
 			allAliens.add(alien);
-			System.out.println(allAliens.size());
+			System.out.println("num of aliens:" + allAliens.size());
 		}
 	}
 
@@ -224,7 +224,6 @@ public class Board extends JPanel implements ActionListener {
 			Rectangle r2 = a.getBounds();
 			if (r3.intersects(r2)) {
 				System.out.println("touched an alien");
-				// here
 				int numOfLives = spaceship.getNumOfLives();
 				numOfLives--;
 				if (numOfLives < 0) {

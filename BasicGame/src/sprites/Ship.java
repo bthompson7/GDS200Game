@@ -32,10 +32,16 @@ public class Ship extends Sprite {
         if (x < 1) {
             x = 1;
         }
-   
-
         if (y < 1) {
             y = 1;
+        }
+        
+        //to stop the player from leaving on the right and bottom parts of the board
+        if(x > 727) {
+        	x = 727;
+        }
+        if(y > 635) {
+        	y = 635;
         }
      
     }
