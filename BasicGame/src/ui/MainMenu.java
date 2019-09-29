@@ -12,7 +12,7 @@ public class MainMenu extends JFrame {
 
 	private void initUI(){
 
-		setTitle("GDS200 Game v0.1");
+		setTitle("One Lucky Day");
         setSize(500,500);
         setLocationRelativeTo(null);
         setResizable(false);

@@ -10,7 +10,7 @@ public class Main extends JFrame {
 	
 	private void initUI() {
 		add(new Board());
-		setTitle("GDS200 Game v0.1");
+		setTitle("One Lucky Day");
         setSize(800,800);
         setLocationRelativeTo(null);
         setResizable(false);
