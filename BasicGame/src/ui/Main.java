@@ -11,7 +11,7 @@ public class Main extends JFrame {
 	private void initUI() {
 		add(new Board());
 		setTitle("One Lucky Day");
-        setSize(800,800);
+        setSize(1000,1000);
         setLocationRelativeTo(null);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

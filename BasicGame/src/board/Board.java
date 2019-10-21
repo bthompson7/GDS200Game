@@ -35,6 +35,7 @@ public class Board extends JPanel implements ActionListener {
 	private static final long serialVersionUID = 7225208019412994637L;
 	private Timer timer;
 	private Ship spaceship;
+	private Ship2 spaceship2;
 	private PowerUp speedBoost;
 	private boolean ingame;
 	private boolean powerUpVisible = false;
@@ -61,6 +62,7 @@ public class Board extends JPanel implements ActionListener {
 		ingame = true;
 		setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT));
 		spaceship = new Ship(ICRAFT_X, ICRAFT_Y);
+		spaceship2 = new Ship2(ICRAFT_X+50,ICRAFT_Y+50);
 		timer = new Timer(DELAY, this);
 		timer.start();
 		add(b);
@@ -76,6 +78,7 @@ public class Board extends JPanel implements ActionListener {
 		System.out.println("Pressed play again button");
 		ingame = true;
 		spaceship = new Ship(ICRAFT_X, ICRAFT_Y);
+		spaceship2 = new Ship2(ICRAFT_X+50,ICRAFT_Y+50);
 		addKeyListener(new TAdapter());
 		setFocusable(true);
 		numOfPowerUpsCollected = 0;
@@ -112,6 +115,10 @@ public class Board extends JPanel implements ActionListener {
 		if (spaceship.isVisible()) {
 			g.drawImage(spaceship.getImage(), spaceship.getX(), spaceship.getY(), this);
 		}
+		if(spaceship2.isVisible()) {
+			g.drawImage(spaceship2.getImage(), spaceship2.getX(), spaceship2.getY(), this);
+		}
+		
 		if (powerUpVisible) {
 			g.drawImage(speedBoost.getImage(), speedBoost.getX(), speedBoost.getY(), this);
 		}
@@ -190,6 +197,9 @@ public class Board extends JPanel implements ActionListener {
 		if (spaceship.isVisible()) {
 			spaceship.move();
 		}
+		if(spaceship2.isVisible()) {
+			spaceship2.move();
+		}
 	}
 
 	private void moveAliens() {
@@ -209,7 +219,9 @@ public class Board extends JPanel implements ActionListener {
 	 */
 	public void checkCollisions() {
 
-		Rectangle r3 = spaceship.getBounds();
+		int numOfLives;
+		Rectangle r3 = spaceship.getBounds(); //PLAYER 1w
+		Rectangle r = spaceship2.getBounds(); //PLAYER 2
 		int sizeOfAliens = 0;
 		if (powerUpVisible) {
 			Rectangle r4 = speedBoost.getBounds();
@@ -218,13 +230,18 @@ public class Board extends JPanel implements ActionListener {
 				powerUpVisible = false;
 				numOfPowerUpsCollected++;
 			}
+			if(r.intersects(r4)) {
+				speedBoost.setVisible(false);
+				powerUpVisible = false;
+				numOfPowerUpsCollected++;
+			}
 		}
 		while (sizeOfAliens < allAliens.size()) {
 			Alien a = allAliens.get(sizeOfAliens);
 			Rectangle r2 = a.getBounds();
-			if (r3.intersects(r2)) {
+			if (r3.intersects(r2) || r.intersects(r2)) {
 				System.out.println("touched an alien");
-				int numOfLives = spaceship.getNumOfLives();
+			    numOfLives = spaceship.getNumOfLives();
 				numOfLives--;
 				if (numOfLives < 0) {
 					outOfLives = true;
@@ -243,7 +260,7 @@ public class Board extends JPanel implements ActionListener {
 	private void shouldPowerUpSpawn() {
 		Random rand = new Random();
 		if (!powerUpVisible) {
-			int num = rand.nextInt(400);
+			int num = rand.nextInt(300);
 			if (num == 0) {
 				System.out.println("Power up spawned");
 				powerUpVisible = true;
@@ -260,11 +277,14 @@ public class Board extends JPanel implements ActionListener {
 		@Override
 		public void keyReleased(KeyEvent e) {
 			spaceship.keyReleased(e);
+			spaceship2.keyReleased(e);
 		}
 
 		@Override
 		public void keyPressed(KeyEvent e) {
 			spaceship.keyPressed(e);
+			spaceship2.keyPressed(e);
+
 		}
 	}
 }
