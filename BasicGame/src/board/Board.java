@@ -12,25 +12,22 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.FileHandler;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-
-import sprites.*;
-import ui.HowToPlayWindow;
-import util.Bucket;
-
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+
+import sprites.Alien;
+import sprites.PowerUp;
+import sprites.Ship;
+import sprites.Ship2;
+import util.Bucket;
 
 public class Board extends JPanel implements ActionListener {
 	private static final long serialVersionUID = 7225208019412994637L;
@@ -53,9 +50,9 @@ public class Board extends JPanel implements ActionListener {
 	//private ArrayList<Alien> allAliens = new ArrayList<Alien>();
     Bucket<Alien> allAliens = new Bucket<Alien>();
 	JButton b = new JButton("Play Again");
-	JButton feedback = new JButton("Feedback");
-
-
+	Clip clip;
+	AudioInputStream audioInputStream; 
+	URL url = this.getClass().getResource("/resources/hurt.wav");
 	public Board() {
 		initBoard();
 	}
@@ -74,8 +71,7 @@ public class Board extends JPanel implements ActionListener {
 		add(b);
 		
 		b.setVisible(false);
-		add(feedback);
-		feedback.setVisible(false);
+		
 	}
 
 	
@@ -83,9 +79,6 @@ public class Board extends JPanel implements ActionListener {
 		remove(b);
 		add(b);
 		b.setVisible(false);
-		remove(feedback);
-		add(feedback);
-		feedback.setVisible(false);
 		System.out.println("Pressed play again button");
 		ingame = true;
 		spaceship = new Ship(ICRAFT_X, ICRAFT_Y);
@@ -121,7 +114,6 @@ public class Board extends JPanel implements ActionListener {
 			}
 
 			allAliens.clear();
-			//allAliens.pourBucket();
 			hitAlien = false;
 		}
 		if (spaceship.isVisible()) {
@@ -260,6 +252,7 @@ public class Board extends JPanel implements ActionListener {
 			Alien a = allAliens.get(sizeOfAliens);
 			Rectangle r2 = a.getBounds();
 			if (r3.intersects(r2) || r.intersects(r2)) {
+				playAudio();
 				System.out.println("touched an alien");
 			    numOfLives = spaceship.getNumOfLives();
 				numOfLives--;
@@ -271,7 +264,6 @@ public class Board extends JPanel implements ActionListener {
 				spaceship.setNumOfLives(numOfLives);
 				hitAlien = true;
 				allAliens.clear();
-				//allAliens.pourBucket();
 			}
 			sizeOfAliens++;
 		}
@@ -291,6 +283,23 @@ public class Board extends JPanel implements ActionListener {
 				speedBoost.setVisible(true);
 			}
 		}
+	}
+	
+	public void playAudio() {
+		try {
+				String s = url.getFile().toString();
+				s = "/" + s;
+				File f = new File(s);
+				audioInputStream = AudioSystem.getAudioInputStream(f.getAbsoluteFile());
+				clip = AudioSystem.getClip();
+				if(!clip.isOpen()) {
+				clip.open(audioInputStream);
+				}
+
+			} catch (Exception e) {
+				System.err.println(e.getMessage());
+			}
+			clip.start();
 	}
 
 	private class TAdapter extends KeyAdapter {
