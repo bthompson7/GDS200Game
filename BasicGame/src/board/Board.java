@@ -48,9 +48,13 @@ public class Board extends JPanel implements ActionListener {
 	private boolean hitAlien = false;
 	private boolean outOfLives = false;
 	private int numOfPowerUpsCollected = 0;
+	private int startingDifficulty = 75;
+	private boolean changeDiff = false;
 	//private ArrayList<Alien> allAliens = new ArrayList<Alien>();
     Bucket<Alien> allAliens = new Bucket<Alien>();
 	JButton b = new JButton("Play Again");
+	JButton feedback = new JButton("Feedback");
+
 
 	public Board() {
 		initBoard();
@@ -70,6 +74,8 @@ public class Board extends JPanel implements ActionListener {
 		add(b);
 		
 		b.setVisible(false);
+		add(feedback);
+		feedback.setVisible(false);
 	}
 
 	
@@ -77,6 +83,9 @@ public class Board extends JPanel implements ActionListener {
 		remove(b);
 		add(b);
 		b.setVisible(false);
+		remove(feedback);
+		add(feedback);
+		feedback.setVisible(false);
 		System.out.println("Pressed play again button");
 		ingame = true;
 		spaceship = new Ship(ICRAFT_X, ICRAFT_Y);
@@ -165,7 +174,10 @@ public class Board extends JPanel implements ActionListener {
 		b.addActionListener((e) -> {
 			reinitBoard(g);
 		});
+
+		
 	}
+
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -187,9 +199,14 @@ public class Board extends JPanel implements ActionListener {
 
 	private void generateAliens() {
 		Random rand = new Random();
-		int num = rand.nextInt(75);
+		if(numOfPowerUpsCollected >= 10 && !changeDiff) {
+			startingDifficulty-=10;
+			changeDiff = true;
+			System.out.println(startingDifficulty);
+		}
+		int num = rand.nextInt(startingDifficulty);
 		if (num == 0) {
-			int xLoc = rand.nextInt(800);
+			int xLoc = rand.nextInt(1000);
 			Alien alien = new Alien(xLoc, 0);
 			allAliens.add(alien);
 			System.out.println("num of aliens:" + allAliens.size());

@@ -1,6 +1,10 @@
 package ui;
+import java.net.URL;
+
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -26,17 +30,24 @@ public class HowToPlayWindow extends JFrame {
         setLocationRelativeTo(null);
 
         JTextArea howTo = new JTextArea();
-        howTo.setSize(200, 200);
+        howTo.setSize(400, 200);
         howTo.setLineWrap(true);
-        howTo.setToolTipText("lol");;
+        howTo.setToolTipText("info!");;
         howTo.setAlignmentX(CENTER_ALIGNMENT);
         howTo.setEditable(false);
-        String about = "You play as a blue square and your goal is to collect as many red squares as possible while dodging the enemies\n"
-        		+ "You control your character using the WASD keys ";
+        String about = "Your objective is to score as many points as possible while dodging enemies that "
+        		+ "are increasing more difficult to dodge";
         
         JButton backBtn = new JButton("Back");
         howTo.setText(about);
         JPanel panel = new JPanel();
+
+		JLabel jl = new JLabel();
+
+		URL url = MainMenu.class.getResource("/resources/gameControls.png");
+		jl.setIcon(new ImageIcon(url));
+		jl.setAlignmentX(CENTER_ALIGNMENT);
+		panel.add(jl);
         panel.add(howTo);
         panel.add(backBtn);
 
