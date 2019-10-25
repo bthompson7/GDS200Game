@@ -26,6 +26,7 @@ import java.util.logging.SimpleFormatter;
 
 import sprites.*;
 import ui.HowToPlayWindow;
+import util.Bucket;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -47,7 +48,8 @@ public class Board extends JPanel implements ActionListener {
 	private boolean hitAlien = false;
 	private boolean outOfLives = false;
 	private int numOfPowerUpsCollected = 0;
-	private ArrayList<Alien> allAliens = new ArrayList<Alien>();
+	//private ArrayList<Alien> allAliens = new ArrayList<Alien>();
+    Bucket<Alien> allAliens = new Bucket<Alien>();
 	JButton b = new JButton("Play Again");
 
 	public Board() {
@@ -110,6 +112,7 @@ public class Board extends JPanel implements ActionListener {
 			}
 
 			allAliens.clear();
+			//allAliens.pourBucket();
 			hitAlien = false;
 		}
 		if (spaceship.isVisible()) {
@@ -251,6 +254,7 @@ public class Board extends JPanel implements ActionListener {
 				spaceship.setNumOfLives(numOfLives);
 				hitAlien = true;
 				allAliens.clear();
+				//allAliens.pourBucket();
 			}
 			sizeOfAliens++;
 		}

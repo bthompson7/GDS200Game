@@ -37,8 +37,8 @@ public class Ship extends Sprite {
         }
         
         //to stop the player from leaving on the right and bottom parts of the board
-        if(x > 727) {
-        	x = 727;
+        if(x > 927) {
+        	x = 927;
         }
         if(y > 635) {
         	y = 635;
