@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import sprites.Alien;
+import sprites.ExtraLife;
 import sprites.PowerUp;
 import sprites.Ship;
 import sprites.Ship2;
@@ -32,7 +33,9 @@ public class Board extends JPanel implements ActionListener {
 	private Ship spaceship;
 	private Ship2 spaceship2;
 	private PowerUp speedBoost;
+	private ExtraLife el;
 	private boolean ingame;
+	private boolean hasExtraLifeSpawned = false;
 	private boolean powerUpVisible = false;
 	private final int ICRAFT_X = 400;
 	private final int ICRAFT_Y = 600;
@@ -44,11 +47,8 @@ public class Board extends JPanel implements ActionListener {
 	private int numOfPowerUpsCollected = 0;
 	private int startingDifficulty = 70;
 	private boolean changeDiff = false;
-	//private ArrayList<Alien> allAliens = new ArrayList<Alien>();
     Bucket<Alien> allAliens = new Bucket<Alien>();
 	JButton b = new JButton("Play Again");
-	Clip clip;
-	AudioInputStream audioInputStream; 
 	public Board() {
 		initBoard();
 	}
@@ -83,6 +83,7 @@ public class Board extends JPanel implements ActionListener {
 		setFocusable(true);
 		numOfPowerUpsCollected = 0;
 		outOfLives = false;
+		hasExtraLifeSpawned = false;
 		g.dispose();
 		setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT));
 		timer.start();
@@ -121,6 +122,10 @@ public class Board extends JPanel implements ActionListener {
 		
 		if (powerUpVisible) {
 			g.drawImage(speedBoost.getImage(), speedBoost.getX(), speedBoost.getY(), this);
+		}
+		if(el!= null && el.isVisible()) {
+			g.drawImage(el.getImage(), el.getX(), el.getY(), this);
+
 		}
 		int index = 0;
 		while (index < allAliens.size()) {
@@ -174,6 +179,7 @@ public class Board extends JPanel implements ActionListener {
 		generateAliens();
 		moveAliens();
 		shouldPowerUpSpawn();
+		shouldExtraLifeSpawn();
 		repaint();
 		checkCollisions();
 
@@ -231,6 +237,21 @@ public class Board extends JPanel implements ActionListener {
 		Rectangle r3 = spaceship.getBounds(); //PLAYER 1
 		Rectangle r = spaceship2.getBounds(); //PLAYER 2
 		int sizeOfAliens = 0;
+		
+		
+		if(el != null) {
+		Rectangle extraLife = el.getBounds();
+		if(r.intersects(extraLife) || r3.intersects(extraLife)) {
+			 int lives = spaceship.getNumOfLives();
+			 int lives2 = spaceship2.getNumOfLives();
+			 lives++;
+			 lives2++;
+			 spaceship.setNumOfLives(lives);
+			 spaceship2.setNumOfLives(lives2);
+			 el = null;
+			}
+		}
+
 		if (powerUpVisible) {
 			Rectangle r4 = speedBoost.getBounds();
 			if (r3.intersects(r4)) {
@@ -278,6 +299,17 @@ public class Board extends JPanel implements ActionListener {
 				speedBoost.setVisible(true);
 			}
 		}
+	}
+	
+	public void shouldExtraLifeSpawn() {
+		Random rng = new Random();
+		int chance = rng.nextInt(300);
+		if(spaceship.getNumOfLives() < 4 && chance == 0 && !hasExtraLifeSpawned) {
+			hasExtraLifeSpawned = true;
+			el = new ExtraLife(400,400);
+
+		}
+		
 	}
 	
 
