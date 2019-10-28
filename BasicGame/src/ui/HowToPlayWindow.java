@@ -30,13 +30,12 @@ public class HowToPlayWindow extends JFrame {
         setLocationRelativeTo(null);
 
         JTextArea howTo = new JTextArea();
-        howTo.setSize(400, 200);
+        howTo.setSize(400,200);
         howTo.setLineWrap(true);
         howTo.setToolTipText("info!");;
         howTo.setAlignmentX(CENTER_ALIGNMENT);
         howTo.setEditable(false);
-        String about = "Your objective is to score as many points as possible while dodging enemies that "
-        		+ "are increasing more difficult to dodge";
+        String about = "Your objective is to score as many points as possible while\n dodging enemies";
         
         JButton backBtn = new JButton("Back");
         howTo.setText(about);
