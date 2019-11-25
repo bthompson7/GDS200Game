@@ -2,6 +2,8 @@ package sprites;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 
@@ -10,6 +12,8 @@ public class Ship2 extends Sprite {
     private int dx;
     private int dy;
     private int numOfLives = 4;
+	private List<Missle> missiles;
+
 
     public Ship2(int x, int y) {
     	super(x, y);
@@ -17,13 +21,17 @@ public class Ship2 extends Sprite {
     }
 
     private void initShip() {
-    	URL url = 	Ship.class.getResource("/resources/player-2.png");
-    	System.out.println(url);
+    	URL url = 	Ship2.class.getResource("/resources/player-2.png");
+    	//System.out.println(url);
+		missiles = new ArrayList<>();
         loadImage(url);
         getImageDimensions();
     }
 
-
+    public List<Missle> getMissiles() {
+		return missiles;
+	}
+    
     public void move() {
 
         x += dx;
@@ -45,6 +53,10 @@ public class Ship2 extends Sprite {
         }
      
     }
+    
+    public void fire() {
+		missiles.add(new Missle(x + width, y + height / 2));
+	}
     
     public void keyPressed(KeyEvent e) {
 
@@ -85,6 +97,9 @@ public class Ship2 extends Sprite {
 
         if (key == KeyEvent.VK_DOWN) {
             dy = 0;
+        }
+        if (key == KeyEvent.VK_NUMPAD0) {
+           fire();
         }
     }
 

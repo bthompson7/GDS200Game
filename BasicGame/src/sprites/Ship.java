@@ -1,92 +1,105 @@
 package sprites;
-import java.awt.Image;
+
 import java.awt.event.KeyEvent;
 import java.net.URL;
-
-import javax.swing.ImageIcon;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Ship extends Sprite {
 
-    private int dx;
-    private int dy;
-    private int numOfLives = 4;
+	private int dx;
+	private int dy;
+	private int numOfLives = 4;
+	private List<Missle> missiles;
 
-    public Ship(int x, int y) {
-    	super(x, y);
-    	initShip();
-    }
+	public Ship(int x, int y) {
+		super(x, y);
+		initShip();
+	}
 
-    private void initShip() {
-    	URL url = 	Ship.class.getResource("/resources/smallSquare.png");
-    	System.out.println(url);
-        loadImage(url);
-        getImageDimensions();
-    }
+	private void initShip() {
+		missiles = new ArrayList<>();
+		URL url = Ship.class.getResource("/resources/smallSquare.png");
+		loadImage(url);
+		getImageDimensions();
+	}
 
+	public List<Missle> getMissiles() {
+		return missiles;
+	}
 
-    public void move() {
+	public void fire() {
+		missiles.add(new Missle(x + width, y + height / 2));
+	}
 
-        x += dx;
-        y += dy;
+	public void move() {
 
-        if (x < 1) {
-            x = 1;
-        }
-        if (y < 1) {
-            y = 1;
-        }
-        
-        //to stop the player from leaving on the right and bottom parts of the board
-        if(x > 927) {
-        	x = 927;
-        }
-        if(y > 635) {
-        	y = 635;
-        }
-     
-    }
-    
-    public void keyPressed(KeyEvent e) {
+		x += dx;
+		y += dy;
 
-        int key = e.getKeyCode();
+		if (x < 1) {
+			x = 1;
+		}
+		if (y < 1) {
+			y = 1;
+		}
 
-        if (key == KeyEvent.VK_A) {
-            dx = -2;
-        }
+		// to stop the player from leaving on the right and bottom parts of the board
+		if (x > 927) {
+			x = 927;
+		}
+		if (y > 635) {
+			y = 635;
+		}
 
-        if (key == KeyEvent.VK_D) {
-            dx = 2;
-        }
+	}
 
-        if (key == KeyEvent.VK_W) {
-            dy = -2;
-        }
+	public void keyPressed(KeyEvent e) {
 
-        if (key == KeyEvent.VK_S) {
-            dy = 2;
-        }
-    }
+		int key = e.getKeyCode();
 
-    public void keyReleased(KeyEvent e) {
-        
-        int key = e.getKeyCode();
+		if (key == KeyEvent.VK_A) {
+			dx = -2;
+		}
 
-        if (key == KeyEvent.VK_A) {
-            dx = 0;
-        }
+		if (key == KeyEvent.VK_D) {
+			dx = 2;
+		}
 
-        if (key == KeyEvent.VK_D) {
-            dx = 0;
-        }
+		if (key == KeyEvent.VK_W) {
+			dy = -2;
+		}
 
-        if (key == KeyEvent.VK_W) {
-            dy = 0;
-        }
+		if (key == KeyEvent.VK_S) {
+			dy = 2;
+		}
+	}
 
-        if (key == KeyEvent.VK_S) {
-            dy = 0;
-        }
-    }
+	public void keyReleased(KeyEvent e) {
+
+		int key = e.getKeyCode();
+
+		if (key == KeyEvent.VK_A) {
+			dx = 0;
+		}
+
+		if (key == KeyEvent.VK_D) {
+			dx = 0;
+		}
+
+		if (key == KeyEvent.VK_W) {
+			dy = 0;
+		}
+
+		if (key == KeyEvent.VK_S) {
+			dy = 0;
+		}
+
+		if (key == KeyEvent.VK_E) {
+			fire();
+		}
+
+	}
 
 	public int getNumOfLives() {
 		return numOfLives;
@@ -95,5 +108,5 @@ public class Ship extends Sprite {
 	public void setNumOfLives(int numOfLives) {
 		this.numOfLives = numOfLives;
 	}
-    
+
 }

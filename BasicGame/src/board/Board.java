@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -22,6 +23,7 @@ import javax.swing.Timer;
 
 import sprites.Alien;
 import sprites.ExtraLife;
+import sprites.Missle;
 import sprites.PowerUp;
 import sprites.Ship;
 import sprites.Ship2;
@@ -133,6 +135,21 @@ public class Board extends JPanel implements ActionListener {
 			g.drawImage(a.getImage(), a.getX(), a.getY(), this);
 			index++;
 		}
+		
+		List<Missle> missiles = spaceship.getMissiles();
+
+        for (Missle missile : missiles) {
+            
+            g.drawImage(missile.getImage(), missile.getX(),
+                    missile.getY(), this);
+        }
+        List<Missle> missiles2 = spaceship2.getMissiles();
+
+        for (Missle missile2 : missiles2) {
+            
+            g.drawImage(missile2.getImage(), missile2.getX(),
+                    missile2.getY(), this);
+        }
 
 		String numOfLives = "Lives " + spaceship.getNumOfLives();
 		String numOfPoints = "Points " + numOfPowerUpsCollected;
@@ -151,6 +168,40 @@ public class Board extends JPanel implements ActionListener {
 		g.drawString(numOfPoints, 5, 60);
 
 	}
+	
+    private void updateShip1Missiles() {
+
+        List<Missle> missiles = spaceship.getMissiles();
+        for (int i = 0; i < missiles.size(); i++) {
+
+            Missle missile = missiles.get(i);
+
+            if (missile.isVisible()) {
+
+                missile.move();
+            } else {
+
+                missiles.remove(i);
+            }
+        }
+    }
+    
+    private void updateShip2Missles() {
+        List<Missle> missiles2 = spaceship2.getMissiles();
+        for (int i = 0; i < missiles2.size(); i++) {
+
+            Missle missile2 = missiles2.get(i);
+
+            if (missile2.isVisible()) {
+
+                missile2.move();
+            } else {
+
+            	missiles2.remove(i);
+            }
+        }
+
+    }
 
 	private void drawGameOver(Graphics g) {
 
@@ -176,8 +227,10 @@ public class Board extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		inGame();
 		updateShip();
-		generateAliens();
+		generateAliens(); //TODO might include?
 		moveAliens();
+		updateShip1Missiles();
+		updateShip2Missles();
 		shouldPowerUpSpawn();
 		shouldExtraLifeSpawn();
 		repaint();
