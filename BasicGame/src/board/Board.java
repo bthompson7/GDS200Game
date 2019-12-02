@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -22,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import sprites.Alien;
+import sprites.BigShip;
 import sprites.ExtraLife;
 import sprites.Missle;
 import sprites.PowerUp;
@@ -49,8 +51,10 @@ public class Board extends JPanel implements ActionListener {
 	private int numOfPowerUpsCollected = 0;
 	private int startingDifficulty = 70;
 	private boolean changeDiff = false;
-    Bucket<Alien> allAliens = new Bucket<Alien>();
+	Bucket<Alien> allAliens = new Bucket<Alien>();
+	BigShip big = new BigShip(50, 50);
 	JButton b = new JButton("Play Again");
+
 	public Board() {
 		initBoard();
 	}
@@ -63,16 +67,15 @@ public class Board extends JPanel implements ActionListener {
 		ingame = true;
 		setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT));
 		spaceship = new Ship(ICRAFT_X, ICRAFT_Y);
-		spaceship2 = new Ship2(ICRAFT_X+50,ICRAFT_Y+50);
+		spaceship2 = new Ship2(ICRAFT_X + 50, ICRAFT_Y + 50);
 		timer = new Timer(DELAY, this);
 		timer.start();
 		add(b);
-		
+
 		b.setVisible(false);
-		
+
 	}
 
-	
 	private void reinitBoard(Graphics g) {
 		remove(b);
 		add(b);
@@ -80,7 +83,7 @@ public class Board extends JPanel implements ActionListener {
 		System.out.println("Pressed play again button");
 		ingame = true;
 		spaceship = new Ship(ICRAFT_X, ICRAFT_Y);
-		spaceship2 = new Ship2(ICRAFT_X+50,ICRAFT_Y+50);
+		spaceship2 = new Ship2(ICRAFT_X + 50, ICRAFT_Y + 50);
 		addKeyListener(new TAdapter());
 		setFocusable(true);
 		numOfPowerUpsCollected = 0;
@@ -90,6 +93,7 @@ public class Board extends JPanel implements ActionListener {
 		setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT));
 		timer.start();
 	}
+
 
 	@Override
 	public void paintComponent(Graphics g) {
@@ -106,26 +110,29 @@ public class Board extends JPanel implements ActionListener {
 
 	private void drawObjects(Graphics g) {
 		if (hitAlien) {
-			try {
-				TimeUnit.SECONDS.sleep(2);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			// reinitBoardAfterCollision(g);
 
+			big.setVisible(true);
 			allAliens.clear();
+
+			g.setColor(Color.WHITE);
+			g.fillRect(0, 0, 5000, 5000);
+			timer.stop();
 			hitAlien = false;
+
 		}
+		timer.restart();
 		if (spaceship.isVisible()) {
 			g.drawImage(spaceship.getImage(), spaceship.getX(), spaceship.getY(), this);
 		}
-		if(spaceship2.isVisible()) {
+		if (spaceship2.isVisible()) {
 			g.drawImage(spaceship2.getImage(), spaceship2.getX(), spaceship2.getY(), this);
 		}
-		
+
 		if (powerUpVisible) {
 			g.drawImage(speedBoost.getImage(), speedBoost.getX(), speedBoost.getY(), this);
 		}
-		if(el!= null && el.isVisible()) {
+		if (el != null && el.isVisible()) {
 			g.drawImage(el.getImage(), el.getX(), el.getY(), this);
 
 		}
@@ -135,21 +142,19 @@ public class Board extends JPanel implements ActionListener {
 			g.drawImage(a.getImage(), a.getX(), a.getY(), this);
 			index++;
 		}
-		
+
 		List<Missle> missiles = spaceship.getMissiles();
 
-        for (Missle missile : missiles) {
-            
-            g.drawImage(missile.getImage(), missile.getX(),
-                    missile.getY(), this);
-        }
-        List<Missle> missiles2 = spaceship2.getMissiles();
+		for (Missle missile : missiles) {
 
-        for (Missle missile2 : missiles2) {
-            
-            g.drawImage(missile2.getImage(), missile2.getX(),
-                    missile2.getY(), this);
-        }
+			g.drawImage(missile.getImage(), missile.getX(), missile.getY(), this);
+		}
+		List<Missle> missiles2 = spaceship2.getMissiles();
+
+		for (Missle missile2 : missiles2) {
+
+			g.drawImage(missile2.getImage(), missile2.getX(), missile2.getY(), this);
+		}
 
 		String numOfLives = "Lives " + spaceship.getNumOfLives();
 		String numOfPoints = "Points " + numOfPowerUpsCollected;
@@ -168,40 +173,40 @@ public class Board extends JPanel implements ActionListener {
 		g.drawString(numOfPoints, 5, 60);
 
 	}
-	
-    private void updateShip1Missiles() {
 
-        List<Missle> missiles = spaceship.getMissiles();
-        for (int i = 0; i < missiles.size(); i++) {
+	private void updateShip1Missiles() {
 
-            Missle missile = missiles.get(i);
+		List<Missle> missiles = spaceship.getMissiles();
+		for (int i = 0; i < missiles.size(); i++) {
 
-            if (missile.isVisible()) {
+			Missle missile = missiles.get(i);
 
-                missile.move();
-            } else {
+			if (missile.isVisible()) {
 
-                missiles.remove(i);
-            }
-        }
-    }
-    
-    private void updateShip2Missles() {
-        List<Missle> missiles2 = spaceship2.getMissiles();
-        for (int i = 0; i < missiles2.size(); i++) {
+				missile.move(false);
+			} else {
 
-            Missle missile2 = missiles2.get(i);
+				missiles.remove(i);
+			}
+		}
+	}
 
-            if (missile2.isVisible()) {
+	private void updateShip2Missles() {
+		List<Missle> missiles2 = spaceship2.getMissiles();
+		for (int i = 0; i < missiles2.size(); i++) {
 
-                missile2.move();
-            } else {
+			Missle missile2 = missiles2.get(i);
 
-            	missiles2.remove(i);
-            }
-        }
+			if (missile2.isVisible()) {
 
-    }
+				missile2.move(true);
+			} else {
+
+				missiles2.remove(i);
+			}
+		}
+
+	}
 
 	private void drawGameOver(Graphics g) {
 
@@ -219,15 +224,13 @@ public class Board extends JPanel implements ActionListener {
 			reinitBoard(g);
 		});
 
-		
 	}
-
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		inGame();
 		updateShip();
-		generateAliens(); //TODO might include?
+		generateAliens(); // TODO might include?
 		moveAliens();
 		updateShip1Missiles();
 		updateShip2Missles();
@@ -246,8 +249,8 @@ public class Board extends JPanel implements ActionListener {
 
 	private void generateAliens() {
 		Random rand = new Random();
-		if(numOfPowerUpsCollected >= 10 && !changeDiff) {
-			startingDifficulty-=10;
+		if (numOfPowerUpsCollected >= 10 && !changeDiff) {
+			startingDifficulty -= 10;
 			changeDiff = true;
 			System.out.println(startingDifficulty);
 		}
@@ -264,7 +267,7 @@ public class Board extends JPanel implements ActionListener {
 		if (spaceship.isVisible()) {
 			spaceship.move();
 		}
-		if(spaceship2.isVisible()) {
+		if (spaceship2.isVisible()) {
 			spaceship2.move();
 		}
 	}
@@ -287,21 +290,20 @@ public class Board extends JPanel implements ActionListener {
 	public void checkCollisions() {
 
 		int numOfLives;
-		Rectangle r3 = spaceship.getBounds(); //PLAYER 1
-		Rectangle r = spaceship2.getBounds(); //PLAYER 2
+		Rectangle r3 = spaceship.getBounds(); // PLAYER 1
+		Rectangle r = spaceship2.getBounds(); // PLAYER 2
 		int sizeOfAliens = 0;
-		
-		
-		if(el != null) {
-		Rectangle extraLife = el.getBounds();
-		if(r.intersects(extraLife) || r3.intersects(extraLife)) {
-			 int lives = spaceship.getNumOfLives();
-			 int lives2 = spaceship2.getNumOfLives();
-			 lives++;
-			 lives2++;
-			 spaceship.setNumOfLives(lives);
-			 spaceship2.setNumOfLives(lives2);
-			 el = null;
+
+		if (el != null) {
+			Rectangle extraLife = el.getBounds();
+			if (r.intersects(extraLife) || r3.intersects(extraLife)) {
+				int lives = spaceship.getNumOfLives();
+				int lives2 = spaceship2.getNumOfLives();
+				lives++;
+				lives2++;
+				spaceship.setNumOfLives(lives);
+				spaceship2.setNumOfLives(lives2);
+				el = null;
 			}
 		}
 
@@ -312,7 +314,7 @@ public class Board extends JPanel implements ActionListener {
 				powerUpVisible = false;
 				numOfPowerUpsCollected++;
 			}
-			if(r.intersects(r4)) {
+			if (r.intersects(r4)) {
 				speedBoost.setVisible(false);
 				powerUpVisible = false;
 				numOfPowerUpsCollected++;
@@ -323,7 +325,7 @@ public class Board extends JPanel implements ActionListener {
 			Rectangle r2 = a.getBounds();
 			if (r3.intersects(r2) || r.intersects(r2)) {
 				System.out.println("touched an alien");
-			    numOfLives = spaceship.getNumOfLives();
+				numOfLives = spaceship.getNumOfLives();
 				numOfLives--;
 				if (numOfLives < 0) {
 					outOfLives = true;
@@ -353,19 +355,17 @@ public class Board extends JPanel implements ActionListener {
 			}
 		}
 	}
-	
+
 	public void shouldExtraLifeSpawn() {
 		Random rng = new Random();
 		int chance = rng.nextInt(300);
-		if(spaceship.getNumOfLives() < 4 && chance == 0 && !hasExtraLifeSpawned) {
+		if (spaceship.getNumOfLives() < 4 && chance == 0 && !hasExtraLifeSpawned) {
 			hasExtraLifeSpawned = true;
-			el = new ExtraLife(400,400);
+			el = new ExtraLife(400, 400);
 
 		}
-		
-	}
-	
 
+	}
 
 	private class TAdapter extends KeyAdapter {
 

@@ -55,7 +55,11 @@ public class Ship2 extends Sprite {
     }
     
     public void fire() {
-		missiles.add(new Missle(x + width, y + height / 2));
+    	int xPos = x+width;
+    	int yPos = y + height / 2;
+    	System.out.println(x+width);
+    	System.out.println(y + height / 2);
+		missiles.add(new Missle(xPos-80, yPos));
 	}
     
     public void keyPressed(KeyEvent e) {
@@ -98,7 +102,7 @@ public class Ship2 extends Sprite {
         if (key == KeyEvent.VK_DOWN) {
             dy = 0;
         }
-        if (key == KeyEvent.VK_NUMPAD0) {
+        if (key == KeyEvent.VK_SPACE) {
            fire();
         }
     }
