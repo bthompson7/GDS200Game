@@ -55,7 +55,8 @@ public class Board extends JPanel implements ActionListener {
 	private final int DELAY = 15;
 	private boolean hitAlien = false;
 	private boolean outOfLives = false;
-	private int numOfPowerUpsCollected = 0;
+	private int player1Points = 0;
+	private int player2Points = 0;
 	private int startingDifficulty = 70;
 	private boolean changeDiff = false;
 	private Clip clip;
@@ -112,9 +113,11 @@ public class Board extends JPanel implements ActionListener {
 		ingame = true;
 		spaceship = new Ship(ICRAFT_X, ICRAFT_Y);
 		spaceship2 = new Ship2(ICRAFT_X + 50, ICRAFT_Y + 50);
+		player1Points = 0;
+		player2Points = 0;
 		addKeyListener(new TAdapter());
 		setFocusable(true);
-		numOfPowerUpsCollected = 0;
+		// numOfPowerUpsCollected = 0;
 		outOfLives = false;
 		hasExtraLifeSpawned = false;
 		g.dispose();
@@ -184,8 +187,10 @@ public class Board extends JPanel implements ActionListener {
 			g.drawImage(missile2.getImage(), missile2.getX(), missile2.getY(), this);
 		}
 
-		String numOfLives = "Lives " + spaceship.getNumOfLives();
-		String numOfPoints = "Points " + numOfPowerUpsCollected;
+		String numOfLives = "Player 1 Lives " + spaceship.getNumOfLives();
+		String numOfPoints = "Player 1 Points " + player1Points;
+		String numOfLives2 = "Player 2 Lives " + spaceship2.getNumOfLives();
+		String numOfPoints2 = "Player 1 Points " + player2Points;
 		Font small = new Font("Helvetica", Font.PLAIN, 30);
 
 		if (spaceship.getNumOfLives() > 1) {
@@ -195,10 +200,23 @@ public class Board extends JPanel implements ActionListener {
 		} else {
 			g.setColor(Color.RED);
 		}
+	
 		g.setFont(small);
 		g.drawString(numOfLives, 5, 30);
 		g.setColor(Color.WHITE);
 		g.drawString(numOfPoints, 5, 60);
+		
+		if (spaceship2.getNumOfLives() > 1) {
+			g.setColor(Color.GREEN);
+		} else if (spaceship2.getNumOfLives() == 1) {
+			g.setColor(Color.YELLOW);
+		} else {
+			g.setColor(Color.RED);
+		}
+		g.drawString(numOfLives2, 750, 30);
+		g.setColor(Color.WHITE);
+		g.drawString(numOfPoints2, 750, 60);
+	
 
 	}
 
@@ -238,15 +256,23 @@ public class Board extends JPanel implements ActionListener {
 
 	private void drawGameOver(Graphics g) {
 
-		String msg = "Game Over";
-		String msg2 = "Final Score: " + numOfPowerUpsCollected;
+		// String msg = "Game Over";
+		String msg2 = "";
+		if (player1Points > player2Points) {
+			msg2 = "Player 1 Wins with " + player1Points + " points";
+
+		} else if(player2Points > player1Points) {
+			msg2 = "Player 2 Wins with " + player2Points + " points";
+
+		}else {
+			msg2 = "The game ended in a tie!";
+		}
 		Font small = new Font("Helvetica", Font.BOLD, 30);
 		FontMetrics fm = getFontMetrics(small);
 
 		g.setColor(Color.white);
 		g.setFont(small);
-		g.drawString(msg, (B_WIDTH + 350 - fm.stringWidth(msg)) / 2, B_HEIGHT + 50 / 2);
-		g.drawString(msg2, (B_WIDTH + 50 - fm.stringWidth(msg2)) + 100 / 2, B_HEIGHT + 100 / 2);
+		g.drawString(msg2, (B_WIDTH + 50 - fm.stringWidth(msg2)) + 100 / 2, 100 / 2);
 		b.setVisible(true);
 		b.addActionListener((e) -> {
 			reinitBoard(g);
@@ -258,7 +284,7 @@ public class Board extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		inGame();
 		updateShip();
-		generateAliens(); // TODO might include?
+		generateAliens();
 		moveAliens();
 		updateShip1Missiles();
 		updateShip2Missles();
@@ -277,7 +303,7 @@ public class Board extends JPanel implements ActionListener {
 
 	private void generateAliens() {
 		Random rand = new Random();
-		if (numOfPowerUpsCollected >= 10 && !changeDiff) {
+		if (player1Points >= 10 && !changeDiff || player2Points >= 10 && !changeDiff) {
 			startingDifficulty -= 10;
 			changeDiff = true;
 			System.out.println(startingDifficulty);
@@ -324,12 +350,14 @@ public class Board extends JPanel implements ActionListener {
 
 		if (el != null) {
 			Rectangle extraLife = el.getBounds();
-			if (r.intersects(extraLife) || r3.intersects(extraLife)) {
+			if (r3.intersects(extraLife)) {
 				int lives = spaceship.getNumOfLives();
-				int lives2 = spaceship2.getNumOfLives();
 				lives++;
-				lives2++;
 				spaceship.setNumOfLives(lives);
+				el = null;
+			} else if (r.intersects(extraLife)) {
+				int lives2 = spaceship2.getNumOfLives();
+				lives2++;
 				spaceship2.setNumOfLives(lives2);
 				el = null;
 			}
@@ -340,18 +368,20 @@ public class Board extends JPanel implements ActionListener {
 			if (r3.intersects(r4)) {
 				speedBoost.setVisible(false);
 				powerUpVisible = false;
-				numOfPowerUpsCollected++;
+				player1Points++;
 			}
 			if (r.intersects(r4)) {
 				speedBoost.setVisible(false);
 				powerUpVisible = false;
-				numOfPowerUpsCollected++;
+				player2Points++;
 			}
 		}
+		// player 1 r3
+		// player 2 r
 		while (sizeOfAliens < allAliens.size()) {
 			Alien a = allAliens.get(sizeOfAliens);
 			Rectangle r2 = a.getBounds();
-			if (r3.intersects(r2) || r.intersects(r2)) {
+			if (r3.intersects(r2)) {
 				System.out.println("touched an alien");
 				numOfLives = spaceship.getNumOfLives();
 				numOfLives--;
@@ -359,15 +389,35 @@ public class Board extends JPanel implements ActionListener {
 					outOfLives = true;
 					ingame = false;
 					System.out.println("out of lives");
+				} else {
+					spaceship.setNumOfLives(numOfLives);
 				}
-				spaceship.setNumOfLives(numOfLives);
 				hitAlien = true;
 				allAliens.clear();
-				//playAudio();
 				playTheSound();
+			} else if (r.intersects(r2)) {
+				System.out.println("touched an alien");
+				numOfLives = spaceship2.getNumOfLives();
+				numOfLives--;
+				if (numOfLives < 0) {
+					outOfLives = true;
+					ingame = false;
+					System.out.println("out of lives");
+				} else {
+					spaceship2.setNumOfLives(numOfLives);
+
+				}
+				playTheSound();
+				hitAlien = true;
+				allAliens.clear();
 			}
 			sizeOfAliens++;
+
 		}
+
+	
+		// playAudio();
+
 
 	}
 
@@ -399,7 +449,8 @@ public class Board extends JPanel implements ActionListener {
 
 	public void playTheSound() {
 
-		URL url = getClass().getResource("/resources/damage_taken.wav");// You can change this to whatever other sound you have
+		URL url = getClass().getResource("/resources/damage_taken.wav");// You can change this to whatever other sound
+																		// you have
 		SoundEffect(url);// this method will load the sound
 
 		if (clip.isRunning()) {
