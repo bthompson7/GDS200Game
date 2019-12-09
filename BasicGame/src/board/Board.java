@@ -130,6 +130,8 @@ public class Board extends JPanel implements ActionListener {
 			drawObjects(g);
 		}
 		if (outOfLives) {
+			url = getClass().getResource("/resources/game_over.wav");
+			playTheSound();
 			drawGameOver(g);
 
 		}
@@ -253,8 +255,6 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void drawGameOver(Graphics g) {
-		url = getClass().getResource("/resources/game_over.wav"); //TODO FIX IT add game over audio
-		playTheSound();
 		String msg2 = "";
 		if (player1Points > player2Points) {
 			msg2 = "Player 1 wins with " + player1Points + " points";
