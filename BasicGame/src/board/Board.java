@@ -60,6 +60,7 @@ public class Board extends JPanel implements ActionListener {
 	private int player2Points = 0;
 	private int startingDifficulty = 70;
 	private boolean changeDiff = false;
+	private int timeToSleep = 2000;
 	private Clip clip;
 	Logger logger = Logger.getLogger("MyLog");
 	FileHandler fh;
@@ -252,7 +253,8 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void drawGameOver(Graphics g) {
-		url = getClass().getResource("/resources/");
+		url = getClass().getResource("/resources/game_over.wav"); //TODO FIX IT add game over audio
+		playTheSound();
 		String msg2 = "";
 		if (player1Points > player2Points) {
 			msg2 = "Player 1 wins with " + player1Points + " points";
@@ -376,6 +378,8 @@ public class Board extends JPanel implements ActionListener {
 			Alien a = allAliens.get(sizeOfAliens);
 			Rectangle r2 = a.getBounds();
 			if (p1.intersects(r2)) {
+				url = getClass().getResource("/resources/damage_taken.wav");
+
 				System.out.println("touched an alien");
 				numOfLives = spaceship.getNumOfLives();
 				numOfLives--;
@@ -390,6 +394,7 @@ public class Board extends JPanel implements ActionListener {
 				allAliens.clear();
 				playTheSound();
 			} else if (p2.intersects(r2)) {
+				url = getClass().getResource("/resources/damage_taken.wav");
 				System.out.println("touched an alien");
 				numOfLives = spaceship2.getNumOfLives();
 				numOfLives--;
@@ -412,22 +417,20 @@ public class Board extends JPanel implements ActionListener {
 	
 		/*
 		 * Check missles
-		 * TODO WORKING ON IT 
+		 * TODO WORKING ON IT ADD AUDIO
 		 */
 		List<Missle> missles = spaceship.getMissiles();
 		for(Missle m : missles) {
 			if(p2.intersects(m.getBounds())) {//player 2 
+				url = getClass().getResource("/resources/missile_damage.wav");
+				playTheSound();
 				spaceship2.setIsSlow(true);
 				m.setVisible(false);
 				one = new Thread() {
 				    public void run() {
 				        try {
-				            System.out.println("Does it work?");
-
-				            Thread.sleep(2000);
-
+				            Thread.sleep(timeToSleep);
 				            spaceship2.setIsSlow(false);
-				            System.out.println("Nope, it doesnt...again.");
 				        } catch(InterruptedException v) {
 				            System.out.println(v);
 				        }
@@ -443,13 +446,15 @@ public class Board extends JPanel implements ActionListener {
 		
 		List<Missle> missles2 = spaceship2.getMissiles();
 		for(Missle m : missles2) {
-			if(p1.intersects(m.getBounds())) {//player 1
+			if(p1.intersects(m.getBounds())) {
+				url = getClass().getResource("/resources/missile_damage.wav");
+				playTheSound();
 				spaceship.setIsSlow(true);
 				m.setVisible(false);
 				one = new Thread() {
 				    public void run() {
 				        try {
-				            Thread.sleep(2000);
+				            Thread.sleep(timeToSleep);
 				            spaceship.setIsSlow(false);
 				        } catch(InterruptedException v) {
 				            System.out.println(v);
