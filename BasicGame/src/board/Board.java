@@ -11,13 +11,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.geom.Rectangle2D;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -51,6 +58,10 @@ public class Board extends JPanel implements ActionListener {
 	private int numOfPowerUpsCollected = 0;
 	private int startingDifficulty = 70;
 	private boolean changeDiff = false;
+	private Clip clip;
+	Logger logger = Logger.getLogger("MyLog");
+	FileHandler fh;
+	URL url = null;
 	Bucket<Alien> allAliens = new Bucket<Alien>();
 	BigShip big = new BigShip(50, 50);
 	JButton b = new JButton("Play Again");
@@ -60,6 +71,22 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void initBoard() {
+		url = getClass().getResource("/resources/damage_taken.wav");
+		try {
+
+			// This block configure the logger with handler and formatter
+			fh = new FileHandler("/home/ben/Desktop/3DGame/MyLogFile.txt");
+			logger.addHandler(fh);
+			SimpleFormatter formatter = new SimpleFormatter();
+			fh.setFormatter(formatter);
+
+			// the following statement is used to log any messages
+
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		addKeyListener(new TAdapter());
 		setFocusable(true);
@@ -77,6 +104,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void reinitBoard(Graphics g) {
+		url = Board.class.getResource("/resources/damage_taken.wav");
 		remove(b);
 		add(b);
 		b.setVisible(false);
@@ -93,7 +121,6 @@ public class Board extends JPanel implements ActionListener {
 		setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT));
 		timer.start();
 	}
-
 
 	@Override
 	public void paintComponent(Graphics g) {
@@ -118,6 +145,7 @@ public class Board extends JPanel implements ActionListener {
 			g.setColor(Color.WHITE);
 			g.fillRect(0, 0, 5000, 5000);
 			timer.stop();
+
 			hitAlien = false;
 
 		}
@@ -335,6 +363,8 @@ public class Board extends JPanel implements ActionListener {
 				spaceship.setNumOfLives(numOfLives);
 				hitAlien = true;
 				allAliens.clear();
+				//playAudio();
+				playTheSound();
 			}
 			sizeOfAliens++;
 		}
@@ -365,6 +395,36 @@ public class Board extends JPanel implements ActionListener {
 
 		}
 
+	}
+
+	public void playTheSound() {
+
+		URL url = getClass().getResource("/resources/damage_taken.wav");// You can change this to whatever other sound you have
+		SoundEffect(url);// this method will load the sound
+
+		if (clip.isRunning()) {
+			clip.stop(); // Stop the player if it is still running
+		}
+		clip.setFramePosition(0); // rewind to the beginning
+		clip.start(); // Start playing
+
+	}
+
+	private void SoundEffect(URL url) {
+		try {
+			// Set up an audio input stream piped from the sound file.
+			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url);
+			// Get a clip resource.
+			clip = AudioSystem.getClip();
+			// Open audio clip and load samples from the audio input stream.
+			clip.open(audioInputStream);
+		} catch (UnsupportedAudioFileException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (LineUnavailableException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private class TAdapter extends KeyAdapter {
