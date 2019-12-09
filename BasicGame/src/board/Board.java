@@ -39,6 +39,7 @@ import sprites.Ship2;
 import util.Bucket;
 
 public class Board extends JPanel implements ActionListener {
+	Thread one = null;
 	private static final long serialVersionUID = 7225208019412994637L;
 	private Timer timer;
 	private Ship spaceship;
@@ -74,15 +75,10 @@ public class Board extends JPanel implements ActionListener {
 	private void initBoard() {
 		url = getClass().getResource("/resources/damage_taken.wav");
 		try {
-
-			// This block configure the logger with handler and formatter
-			fh = new FileHandler("/home/ben/Desktop/3DGame/MyLogFile.txt");
+			fh = new FileHandler("/home/ben/Desktop/3DGame/MyLogFile.txt");//TODO should probably change this depending on the os
 			logger.addHandler(fh);
 			SimpleFormatter formatter = new SimpleFormatter();
 			fh.setFormatter(formatter);
-
-			// the following statement is used to log any messages
-
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -101,6 +97,7 @@ public class Board extends JPanel implements ActionListener {
 		add(b);
 
 		b.setVisible(false);
+		
 
 	}
 
@@ -190,7 +187,7 @@ public class Board extends JPanel implements ActionListener {
 		String numOfLives = "Player 1 Lives " + spaceship.getNumOfLives();
 		String numOfPoints = "Player 1 Points " + player1Points;
 		String numOfLives2 = "Player 2 Lives " + spaceship2.getNumOfLives();
-		String numOfPoints2 = "Player 1 Points " + player2Points;
+		String numOfPoints2 = "Player 2 Points " + player2Points;
 		Font small = new Font("Helvetica", Font.PLAIN, 30);
 
 		if (spaceship.getNumOfLives() > 1) {
@@ -255,14 +252,13 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void drawGameOver(Graphics g) {
-
-		// String msg = "Game Over";
+		url = getClass().getResource("/resources/");
 		String msg2 = "";
 		if (player1Points > player2Points) {
-			msg2 = "Player 1 Wins with " + player1Points + " points";
+			msg2 = "Player 1 wins with " + player1Points + " points";
 
 		} else if(player2Points > player1Points) {
-			msg2 = "Player 2 Wins with " + player2Points + " points";
+			msg2 = "Player 2 wins with " + player2Points + " points";
 
 		}else {
 			msg2 = "The game ended in a tie!";
@@ -272,7 +268,7 @@ public class Board extends JPanel implements ActionListener {
 
 		g.setColor(Color.white);
 		g.setFont(small);
-		g.drawString(msg2, (B_WIDTH + 50 - fm.stringWidth(msg2)) + 100 / 2, 100 / 2);
+		g.drawString(msg2, (B_WIDTH + 250 - fm.stringWidth(msg2)) + 150 / 2, 150 / 2);
 		b.setVisible(true);
 		b.addActionListener((e) -> {
 			reinitBoard(g);
@@ -342,20 +338,19 @@ public class Board extends JPanel implements ActionListener {
 	 * square by checking if any of the points intersect
 	 */
 	public void checkCollisions() {
-
 		int numOfLives;
-		Rectangle r3 = spaceship.getBounds(); // PLAYER 1
-		Rectangle r = spaceship2.getBounds(); // PLAYER 2
+		Rectangle p1 = spaceship.getBounds(); // PLAYER 1 r3
+		Rectangle p2 = spaceship2.getBounds(); // PLAYER 2
 		int sizeOfAliens = 0;
 
 		if (el != null) {
 			Rectangle extraLife = el.getBounds();
-			if (r3.intersects(extraLife)) {
+			if (p1.intersects(extraLife)) {
 				int lives = spaceship.getNumOfLives();
 				lives++;
 				spaceship.setNumOfLives(lives);
 				el = null;
-			} else if (r.intersects(extraLife)) {
+			} else if (p2.intersects(extraLife)) {
 				int lives2 = spaceship2.getNumOfLives();
 				lives2++;
 				spaceship2.setNumOfLives(lives2);
@@ -365,23 +360,22 @@ public class Board extends JPanel implements ActionListener {
 
 		if (powerUpVisible) {
 			Rectangle r4 = speedBoost.getBounds();
-			if (r3.intersects(r4)) {
+			if (p1.intersects(r4)) {
 				speedBoost.setVisible(false);
 				powerUpVisible = false;
 				player1Points++;
 			}
-			if (r.intersects(r4)) {
+			if (p2.intersects(r4)) {
 				speedBoost.setVisible(false);
 				powerUpVisible = false;
 				player2Points++;
 			}
 		}
-		// player 1 r3
-		// player 2 r
+
 		while (sizeOfAliens < allAliens.size()) {
 			Alien a = allAliens.get(sizeOfAliens);
 			Rectangle r2 = a.getBounds();
-			if (r3.intersects(r2)) {
+			if (p1.intersects(r2)) {
 				System.out.println("touched an alien");
 				numOfLives = spaceship.getNumOfLives();
 				numOfLives--;
@@ -395,7 +389,7 @@ public class Board extends JPanel implements ActionListener {
 				hitAlien = true;
 				allAliens.clear();
 				playTheSound();
-			} else if (r.intersects(r2)) {
+			} else if (p2.intersects(r2)) {
 				System.out.println("touched an alien");
 				numOfLives = spaceship2.getNumOfLives();
 				numOfLives--;
@@ -416,10 +410,63 @@ public class Board extends JPanel implements ActionListener {
 		}
 
 	
-		// playAudio();
+		/*
+		 * Check missles
+		 * TODO WORKING ON IT 
+		 */
+		List<Missle> missles = spaceship.getMissiles();
+		for(Missle m : missles) {
+			if(p2.intersects(m.getBounds())) {//player 2 
+				spaceship2.setIsSlow(true);
+				m.setVisible(false);
+				one = new Thread() {
+				    public void run() {
+				        try {
+				            System.out.println("Does it work?");
 
+				            Thread.sleep(2000);
 
-	}
+				            spaceship2.setIsSlow(false);
+				            System.out.println("Nope, it doesnt...again.");
+				        } catch(InterruptedException v) {
+				            System.out.println(v);
+				        }
+				    }  
+				};
+
+				one.start();
+				
+				
+			}
+			
+		}
+		
+		List<Missle> missles2 = spaceship2.getMissiles();
+		for(Missle m : missles2) {
+			if(p1.intersects(m.getBounds())) {//player 1
+				spaceship.setIsSlow(true);
+				m.setVisible(false);
+				one = new Thread() {
+				    public void run() {
+				        try {
+				            Thread.sleep(2000);
+				            spaceship.setIsSlow(false);
+				        } catch(InterruptedException v) {
+				            System.out.println(v);
+				        }
+				    }  
+				};
+
+				one.start();
+				
+				
+			}
+			
+		}
+		
+		
+
+	}//end of method
 
 	private void shouldPowerUpSpawn() {
 		Random rand = new Random();
@@ -448,16 +495,12 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	public void playTheSound() {
-
-		URL url = getClass().getResource("/resources/damage_taken.wav");// You can change this to whatever other sound
-																		// you have
-		SoundEffect(url);// this method will load the sound
-
+		SoundEffect(url);
 		if (clip.isRunning()) {
-			clip.stop(); // Stop the player if it is still running
+			clip.stop();
 		}
-		clip.setFramePosition(0); // rewind to the beginning
-		clip.start(); // Start playing
+		clip.setFramePosition(0); 
+		clip.start();
 
 	}
 

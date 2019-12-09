@@ -13,6 +13,7 @@ public class Ship2 extends Sprite {
     private int dy;
     private int numOfLives = 4;
 	private List<Missle> missiles;
+	private boolean isSlow = false;
 
 
     public Ship2(int x, int y) {
@@ -66,6 +67,7 @@ public class Ship2 extends Sprite {
 
         int key = e.getKeyCode();
 
+        if(!isSlow) {
         if (key == KeyEvent.VK_LEFT) {
             dx = -2;
         }
@@ -80,6 +82,8 @@ public class Ship2 extends Sprite {
 
         if (key == KeyEvent.VK_DOWN) {
             dy = 2;
+        }
+        
         }
     }
 
@@ -113,6 +117,14 @@ public class Ship2 extends Sprite {
 
 	public void setNumOfLives(int numOfLives) {
 		this.numOfLives = numOfLives;
+	}
+	
+	public boolean getIsSlow() {
+		return isSlow;
+	}
+
+	public void setIsSlow(boolean slow) {
+		this.isSlow = slow;
 	}
     
 }

@@ -11,6 +11,7 @@ public class Ship extends Sprite {
 	private int dy;
 	private int numOfLives = 4;
 	private List<Missle> missiles;
+	private boolean isSlow = false;
 
 	public Ship(int x, int y) {
 		super(x, y);
@@ -54,24 +55,28 @@ public class Ship extends Sprite {
 
 	}
 
+
 	public void keyPressed(KeyEvent e) {
 
 		int key = e.getKeyCode();
 
-		if (key == KeyEvent.VK_A) {
-			dx = -2;
-		}
+		if (!isSlow) {
+			if (key == KeyEvent.VK_A) {
+				dx = -2;
+			}
 
-		if (key == KeyEvent.VK_D) {
-			dx = 2;
-		}
+			if (key == KeyEvent.VK_D) {
+				dx = 2;
+			}
 
-		if (key == KeyEvent.VK_W) {
-			dy = -2;
-		}
+			if (key == KeyEvent.VK_W) {
+				dy = -2;
+			}
 
-		if (key == KeyEvent.VK_S) {
-			dy = 2;
+			if (key == KeyEvent.VK_S) {
+				dy = 2;
+			}
+
 		}
 	}
 
@@ -109,4 +114,11 @@ public class Ship extends Sprite {
 		this.numOfLives = numOfLives;
 	}
 
+	public boolean getIsSlow() {
+		return isSlow;
+	}
+
+	public void setIsSlow(boolean slow) {
+		this.isSlow = slow;
+	}
 }
