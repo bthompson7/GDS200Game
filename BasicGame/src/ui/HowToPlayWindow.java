@@ -11,17 +11,10 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class HowToPlayWindow extends JFrame {
-	private static final long serialVersionUID = -7428990481596388940L;
-	
-	
-	
-	
+	private static final long serialVersionUID = -7428990481596388940L;	
 	public HowToPlayWindow() {
 		initUI();
 	}
-
-
-
 
 	private void initUI() {
 		setTitle("How To Play");
@@ -35,7 +28,7 @@ public class HowToPlayWindow extends JFrame {
         howTo.setToolTipText("info!");;
         howTo.setAlignmentX(CENTER_ALIGNMENT);
         howTo.setEditable(false);
-        String about = "Your objective is to score as many points as possible while\n dodging enemies";
+        String about ="Your objective is to score as many points as possible while\n dodging enemies";
         
         JButton backBtn = new JButton("Back");
         howTo.setText(about);
@@ -43,7 +36,7 @@ public class HowToPlayWindow extends JFrame {
 
 		JLabel jl = new JLabel();
 
-		URL url = MainMenu.class.getResource("/resources/gameControls.png");
+		URL url = MainMenu.class.getResource("/resources/controls2.png");
 		jl.setIcon(new ImageIcon(url));
 		jl.setAlignmentX(CENTER_ALIGNMENT);
 		panel.add(jl);
@@ -52,10 +45,7 @@ public class HowToPlayWindow extends JFrame {
 
         backBtn.addActionListener((e) -> {
 			setVisible(false);
-			System.out.println("Pressed howto button");
 		});
-
-
 		add(panel);
 		
 		

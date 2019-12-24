@@ -13,11 +13,11 @@ import javax.swing.JPanel;
 public class MainMenu extends JFrame {
 	private static final long serialVersionUID = -3088890058631223710L;
 
-	private static String gameTitle = "One Lucky Day - Co-Op";
+	private static String gameTitle = "One Lucky Day - PvP";
 
 	private void initUI() {
 
-		setTitle("One Lucky Day - Co-Op");
+		setTitle(gameTitle);
 		setSize(500, 500);
 		setLocationRelativeTo(null);
 		setResizable(false);
@@ -33,7 +33,7 @@ public class MainMenu extends JFrame {
 
 		JLabel jl = new JLabel();
 
-		URL url = MainMenu.class.getResource("/resources/title_picture3.gif");
+		URL url = MainMenu.class.getResource("/resources/main_menu_logo.png");
 		jl.setIcon(new ImageIcon(url));
 		jl.setAlignmentX(CENTER_ALIGNMENT);
 		panel.add(jl);

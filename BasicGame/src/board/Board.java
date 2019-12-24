@@ -11,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -39,7 +38,6 @@ import sprites.Ship2;
 import util.Bucket;
 
 public class Board extends JPanel implements ActionListener {
-	Thread one = null;
 	private static final long serialVersionUID = 7225208019412994637L;
 	private Timer timer;
 	private Ship spaceship;
@@ -67,7 +65,7 @@ public class Board extends JPanel implements ActionListener {
 	URL url = null;
 	Bucket<Alien> allAliens = new Bucket<Alien>();
 	BigShip big = new BigShip(50, 50);
-	JButton b = new JButton("Play Again");
+	//JButton b = new JButton("Play Again");
 
 	public Board() {
 		initBoard();
@@ -95,19 +93,17 @@ public class Board extends JPanel implements ActionListener {
 		spaceship2 = new Ship2(ICRAFT_X + 50, ICRAFT_Y + 50);
 		timer = new Timer(DELAY, this);
 		timer.start();
-		add(b);
+		//add(b);
+		System.out.println("Threads active = " + Thread.activeCount());
 
-		b.setVisible(false);
+		//b.setVisible(false);
 		
 
 	}
 
 	private void reinitBoard(Graphics g) {
-		url = Board.class.getResource("/resources/damage_taken.wav");
-		remove(b);
-		add(b);
-		b.setVisible(false);
-		System.out.println("Pressed play again button");
+		url = getClass().getResource("/resources/damage_taken.wav");
+		//b.setVisible(false);
 		ingame = true;
 		spaceship = new Ship(ICRAFT_X, ICRAFT_Y);
 		spaceship2 = new Ship2(ICRAFT_X + 50, ICRAFT_Y + 50);
@@ -115,11 +111,11 @@ public class Board extends JPanel implements ActionListener {
 		player2Points = 0;
 		addKeyListener(new TAdapter());
 		setFocusable(true);
-		// numOfPowerUpsCollected = 0;
 		outOfLives = false;
 		hasExtraLifeSpawned = false;
-		g.dispose();
 		setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT));
+		allAliens.clear();
+		System.out.println("Threads active = " + Thread.activeCount());
 		timer.start();
 	}
 
@@ -130,8 +126,6 @@ public class Board extends JPanel implements ActionListener {
 			drawObjects(g);
 		}
 		if (outOfLives) {
-			url = getClass().getResource("/resources/game_over.wav");
-			playTheSound();
 			drawGameOver(g);
 
 		}
@@ -216,22 +210,15 @@ public class Board extends JPanel implements ActionListener {
 		g.drawString(numOfLives2, 750, 30);
 		g.setColor(Color.WHITE);
 		g.drawString(numOfPoints2, 750, 60);
-	
-
 	}
 
 	private void updateShip1Missiles() {
-
 		List<Missle> missiles = spaceship.getMissiles();
 		for (int i = 0; i < missiles.size(); i++) {
-
 			Missle missile = missiles.get(i);
-
 			if (missile.isVisible()) {
-
 				missile.move(false);
 			} else {
-
 				missiles.remove(i);
 			}
 		}
@@ -240,28 +227,21 @@ public class Board extends JPanel implements ActionListener {
 	private void updateShip2Missles() {
 		List<Missle> missiles2 = spaceship2.getMissiles();
 		for (int i = 0; i < missiles2.size(); i++) {
-
 			Missle missile2 = missiles2.get(i);
-
 			if (missile2.isVisible()) {
-
 				missile2.move(true);
 			} else {
-
 				missiles2.remove(i);
 			}
 		}
-
 	}
 
 	private void drawGameOver(Graphics g) {
 		String msg2 = "";
 		if (player1Points > player2Points) {
 			msg2 = "Player 1 wins with " + player1Points + " points";
-
 		} else if(player2Points > player1Points) {
 			msg2 = "Player 2 wins with " + player2Points + " points";
-
 		}else {
 			msg2 = "The game ended in a tie!";
 		}
@@ -271,11 +251,12 @@ public class Board extends JPanel implements ActionListener {
 		g.setColor(Color.white);
 		g.setFont(small);
 		g.drawString(msg2, (B_WIDTH + 250 - fm.stringWidth(msg2)) + 150 / 2, 150 / 2);
-		b.setVisible(true);
+		//b.setVisible(true);
+		/*
 		b.addActionListener((e) -> {
 			reinitBoard(g);
 		});
-
+		*/
 	}
 
 	@Override
@@ -387,6 +368,8 @@ public class Board extends JPanel implements ActionListener {
 					outOfLives = true;
 					ingame = false;
 					System.out.println("out of lives");
+					url = getClass().getResource("/resources/game_over.wav");
+					//playTheSound();
 				} else {
 					spaceship.setNumOfLives(numOfLives);
 				}
@@ -402,6 +385,8 @@ public class Board extends JPanel implements ActionListener {
 					outOfLives = true;
 					ingame = false;
 					System.out.println("out of lives");
+					url = getClass().getResource("/resources/game_over.wav");
+					playTheSound();
 				} else {
 					spaceship2.setNumOfLives(numOfLives);
 
@@ -417,27 +402,28 @@ public class Board extends JPanel implements ActionListener {
 	
 		/*
 		 * Check missles
-		 * TODO WORKING ON IT ADD AUDIO
 		 */
+		url = getClass().getResource("/resources/missile_damage.wav");
+
 		List<Missle> missles = spaceship.getMissiles();
 		for(Missle m : missles) {
 			if(p2.intersects(m.getBounds())) {//player 2 
-				url = getClass().getResource("/resources/missile_damage.wav");
+				System.out.println("Playing SOUND!!");
 				playTheSound();
 				spaceship2.setIsSlow(true);
 				m.setVisible(false);
-				one = new Thread() {
+				Thread t = new Thread() {
 				    public void run() {
 				        try {
 				            Thread.sleep(timeToSleep);
 				            spaceship2.setIsSlow(false);
-				        } catch(InterruptedException v) {
-				            System.out.println(v);
+				        } catch(InterruptedException e) {
+				            System.out.println(e.getMessage());
 				        }
 				    }  
 				};
 
-				one.start();
+				t.start();
 				
 				
 			}
@@ -445,24 +431,25 @@ public class Board extends JPanel implements ActionListener {
 		}
 		
 		List<Missle> missles2 = spaceship2.getMissiles();
-		for(Missle m : missles2) {
-			if(p1.intersects(m.getBounds())) {
-				url = getClass().getResource("/resources/missile_damage.wav");
+		for(Missle m2 : missles2) {
+			if(p1.intersects(m2.getBounds())) {
+				System.out.println("Playing SOUND!!");
 				playTheSound();
 				spaceship.setIsSlow(true);
-				m.setVisible(false);
-				one = new Thread() {
+				m2.setVisible(false);
+				Thread t2 = new Thread() {
 				    public void run() {
 				        try {
 				            Thread.sleep(timeToSleep);
 				            spaceship.setIsSlow(false);
-				        } catch(InterruptedException v) {
-				            System.out.println(v);
+				            System.out.println("Thread");
+				        } catch(InterruptedException e) {
+				            System.out.println(e.getMessage());
 				        }
 				    }  
 				};
 
-				one.start();
+				t2.start();
 				
 				
 			}
@@ -511,18 +498,16 @@ public class Board extends JPanel implements ActionListener {
 
 	private void SoundEffect(URL url) {
 		try {
-			// Set up an audio input stream piped from the sound file.
 			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url);
-			// Get a clip resource.
 			clip = AudioSystem.getClip();
-			// Open audio clip and load samples from the audio input stream.
 			clip.open(audioInputStream);
 		} catch (UnsupportedAudioFileException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (LineUnavailableException e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
+			//e.printStackTrace();
 		}
 	}
 
