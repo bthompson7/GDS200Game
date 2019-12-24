@@ -7,4 +7,5 @@
 #### OneLuckyDayV0.3.2.jar - version for 10/28
 #### OneLuckyDayV0.3.3.jar - version for 11/4*
 #### OneLuckyDayV0.3.4.jar - beta version for final*
+#### OneLuckyDayV0.3.8.jar - final version*
 
